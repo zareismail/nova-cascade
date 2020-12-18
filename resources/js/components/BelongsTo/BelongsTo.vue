@@ -356,7 +356,7 @@ export default {
      */
     placeholder() {
       if(this.queryResource) {
-        return this.__('Choose :resource', {resource : this.queryResource['label']})
+        return this.__('Choose :resource', {resource : this.queryResource.label})
       }
 
       return this.field.placeholder || this.__('—') 

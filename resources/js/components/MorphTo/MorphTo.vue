@@ -143,7 +143,6 @@ export default {
       default: null,
     },
     relatedResourceId: {
-      type: Number,
       default:null,
     },
     resourceType: null
@@ -398,6 +397,9 @@ export default {
      * Return the selected morphable type's label
      */
     fieldTypeName() {
+      if(this.resourceType != this.queryResource.key) {
+        return this.queryResource.label
+      }
       if (this.resourceType) {
         return _.find(this.field.morphToTypes, type => {
           return type.value == this.resourceType
