@@ -40,6 +40,20 @@ class BelongsTo extends Field
     }
 
     /**
+     * Format the given associatable resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  mixed  $resource
+     * @return array
+     */
+    public function formatAssociatableResource(NovaRequest $request, $resource)
+    {
+        $queryResource = Nova::resourceForKey($request->get('queryResource')) ?? $resource;
+
+        return parent::formatMorphableResource($request, new $queryResource($resource->resource));
+    }
+
+    /**
      * Prepare the field for JSON serialization.
      *
      * @return array

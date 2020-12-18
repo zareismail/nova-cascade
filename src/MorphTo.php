@@ -39,6 +39,23 @@ class MorphTo extends Field
     }
 
     /**
+     * Format the given morphable resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  mixed  $resource
+     * @param  string  $relatedResource
+     * @return array
+     */
+    public function formatMorphableResource(NovaRequest $request, $resource, $relatedResource)
+    {
+        $queryResource = Nova::resourceForKey($request->get('queryResource')) ?? $resource;
+
+        return parent::formatMorphableResource(
+            $request, new $queryResource($resource->resource), $relatedResource
+        );
+    }
+
+    /**
      * Retruns array of related resources.
      * 
      * @return array
