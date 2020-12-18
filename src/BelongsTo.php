@@ -50,7 +50,7 @@ class BelongsTo extends Field
     {
         $queryResource = Nova::resourceForKey($request->get('queryResource')) ?? $resource;
 
-        return parent::formatMorphableResource($request, new $queryResource($resource->resource));
+        return parent::formatAssociatableResource($request, new $queryResource($resource->resource));
     }
 
     /**
