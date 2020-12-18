@@ -151,7 +151,7 @@ export default {
   data: () => ({ 
     initializingWithExistingResource: false,
     softDeletes: false,
-    selectedResourceId: null,
+    selectedResourceId: '',
     selectedResource: null,
     search: '',
     relationModalOpen: false,
@@ -161,46 +161,33 @@ export default {
   /**
    * Mount the component.
    */
-  mounted() {
+  async mounted() {
     this.selectedResourceId = this.queryResource.value
+
+    if(! this.searchable && this.resourceType) { 
+      await this.determineIfSoftDeletes()
+      await this.getAvailableResources()
+    } 
 
     if (this.editingExistingResource) {
       this.initializingWithExistingResource = true
       this.selectedResourceId = this.queryResource.value
-    } else if (this.creatingViaRelatedResource) {
-      this.initializingWithExistingResource = true
-      this.resourceType = this.viaResource
-      this.selectedResourceId = this.viaResourceId
-    }
-
-    if (this.shouldSelectInitialResource) {
-      if (!this.resourceType && this.field.defaultResource) {
-        this.resourceType = this.field.defaultResource
-      }
-      this.getAvailableResources().then(() => this.selectInitialResource())
-    }
-
-    if (this.resourceType) {
-      this.determineIfSoftDeletes()
     } 
 
+    this.shouldSelectInitialResource && this.selectInitialResource() 
+
     this.handleChange()
+
+    if(this.field.resourceName == this.resourceType) { 
+      this.field.fill = this.fill
+    }
   },
 
-  methods: {
-    /**
-     * Select a resource using the <select> control
-     */
-    selectResourceFromSelectControl(e) {
-      this.selectedResourceId = e.target.value
-      this.selectInitialResource()
-      this.handleChange()
-    }, 
-
+  methods: { 
     /**
      * Fill the forms formData with details from this field
      */
-    fill(formData) {  
+    fill(formData) {    
       if (this.selectedResourceId && this.resourceType) {
         formData.append(this.field.attribute, this.selectedResourceId)
         formData.append(this.field.attribute + '_type', this.resourceType)
@@ -210,7 +197,16 @@ export default {
       }
 
       formData.append(this.field.attribute + '_trashed', this.withTrashed)
-    }, 
+    },
+
+    /**
+     * Select a resource using the <select> control
+     */
+    selectResourceFromSelectControl(e) {
+      this.selectedResourceId = e.target.value
+      this.selectInitialResource()
+      this.handleChange()
+    },  
 
     /**
      * Get the resources that may be related to this resource.
@@ -229,6 +225,7 @@ export default {
 
           this.initializingWithExistingResource = false
           this.availableResources = resources
+          this.selectedResourceId = ''
           this.softDeletes = softDeletes
         })
     },
@@ -265,14 +262,12 @@ export default {
       // if (this.resourceType == '') {
       this.softDeletes = false
       // } else if (this.field.searchable) {
-      this.determineIfSoftDeletes()
+      await this.determineIfSoftDeletes()
       // }
 
       if (!this.isSearchable && this.resourceType) {
-        this.getAvailableResources()
+        await this.getAvailableResources()
       }
-
-      this.field.fill = this.fill
 
       this.handleChange()
     },
@@ -306,7 +301,7 @@ export default {
     /**
      * Update the field's internal value
      */
-    handleChange(event) {
+    handleChange() { 
       this.$emit('change', this.selectedResourceId)
     }, 
   },

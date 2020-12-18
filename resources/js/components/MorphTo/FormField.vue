@@ -1,5 +1,5 @@
 <template>
-  <form-belongs-to-field v-if="creatingViaRelatedResource" v-bind="$props" />
+  <form-morph-to-field v-if="creatingViaRelatedResource" :field="field" v-bind="$props" />
   <div v-else>
     <default-field
       :field="field"
@@ -14,7 +14,7 @@
         :dusk="`${field.attribute}-type`"
         slot="field"
         :value="resourceType"
-        @change="resourceType = $event.target.value"
+        @change="handleSelectedMorphType"
         class="block w-full form-control form-input form-input-bordered form-select mb-3"
       >
         <option value="" selected :disabled="!field.nullable">
@@ -88,10 +88,22 @@ export default {
    * Mount the component.
    */
   mounted() {  
-    this.resourceType = this.field.morphToType || null 
+    this.resourceType = this.field.morphToType || ''
+    this.field.fill = this.fill
   },
 
   methods: {
+    /**
+     * Fill the forms formData with details from this field
+     */
+    fill(formData) {    
+      formData.append(this.field.attribute, this.viaResourceId)
+      formData.append(this.field.attribute + '_type', this.viaResource)
+    },
+
+    handleSelectedMorphType(event) { 
+      this.resourceType = event.target.value
+    },
 
     updated(resource, value) {     
       this.$set(this.selected, this.selectionKey(resource), value)
@@ -104,7 +116,7 @@ export default {
     relatedValue(index) {   
       var related = this.relatedResource(index)  
 
-      return this.selected[this.selectionKey(related.key)] || null
+      return this.selected[this.selectionKey(related.key)] || ''
     },
 
     selectionKey(resource){
@@ -117,6 +129,10 @@ export default {
   },
 
   computed: {
+    selectedResourceId() {
+      return this.selected[this.selectionKey(this.field.resourceName)]
+    },
+
     /**
      * Determine if the field is locked
      */
