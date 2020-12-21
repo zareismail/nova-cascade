@@ -190,6 +190,20 @@ export default {
       this.handleChange()
 
       this.working = false
+
+      this.field.fill = this.fill
+    },
+
+    /**
+     * Fill the forms formData with details from this field
+     */
+    fill(formData) {
+      formData.append(
+        this.field.attribute,
+        this.selectedResource ? this.selectedResource.value : ''
+      )
+
+      formData.append(this.field.attribute + '_trashed', this.withTrashed)
     },
 
     /**
