@@ -32,7 +32,11 @@ export default {
   }), 
 
   mounted() { 
-    this.field.fill = this.fill 
+    this.field.fill = this.fill
+
+    if(this.creatingViaRelatedResource) {
+      this.selected[this.field.resourceName] = this.viaResourceId
+    } 
   },
 
   props: ['resourceName', 'resourceId', 'field'],
