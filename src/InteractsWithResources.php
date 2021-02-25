@@ -13,6 +13,10 @@ trait InteractsWithResources
      */
     protected function relatedResources($resource)
     {  
+        if(request()->input('editing') == false) {
+            return [];
+        }
+        
     	return array_merge($this->parentResources($resource->resource), [$resource]);
     } 
 
