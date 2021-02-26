@@ -61,7 +61,7 @@ class BelongsTo extends Field
     public function jsonSerialize()
     {
     	return array_merge(parent::jsonSerialize(), [
-    		'resources' => $this->resources()
+    		'resources' => $this->availableResources()
     	]);
     }
 }

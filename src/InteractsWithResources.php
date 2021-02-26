@@ -85,4 +85,14 @@ trait InteractsWithResources
             'label' => $resource::singularLabel(),
         ];
     }
+
+    /**
+     * Returns available  resources for serialization.
+     * 
+     * @return array
+     */
+    public function availableResources()
+    {
+        return request()->input('editing') ? $this->resources() : [];
+    }
 }
